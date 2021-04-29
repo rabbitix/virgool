@@ -1,12 +1,12 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
 
 app = FastAPI()
 
 
 @app.get('/')
-def read_root():
-    return {'hello': 'World'}
+def read_root(request:Request):
+    return {'docs': str(request.url) + '/docs' }
 
 
 @app.get('/fake_txt_process')
