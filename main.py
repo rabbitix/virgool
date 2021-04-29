@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get('/')
 def read_root(request:Request):
-    return {'docs': str(request.url) + '/docs' }
+    return {'docs': str(request.client.host) + '/docs' }
 
 
 @app.get('/fake_txt_process')
