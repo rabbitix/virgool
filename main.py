@@ -36,7 +36,7 @@ html = """
 
         <script>
 
-            var ws = new WebSocket("ws://localhost:8000/ws");
+            var ws = new WebSocket("ws://"+window.location.host +"/ws");
 
             ws.onmessage = function(event) {
 
