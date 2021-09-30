@@ -1,19 +1,91 @@
+from fastapi import FastAPI, WebSocket
 
-from fastapi import FastAPI,Request
+from fastapi.responses import HTMLResponse
+
 
 app = FastAPI()
 
 
-@app.get('/')
-def read_root(request:Request):
-    return {'docs': str(request.client.host) + '/docs' }
+html = """
+
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <title>Chat</title>
+
+    </head>
+
+    <body>
+
+        <h1>WebSocket Chat</h1>
+
+        <form action="" onsubmit="sendMessage(event)">
+
+            <input type="text" id="messageText" autocomplete="off"/>
+
+            <button>Send</button>
+
+        </form>
+
+        <ul id='messages'>
+
+        </ul>
+
+        <script>
+
+            var ws = new WebSocket("ws://localhost:8000/ws");
+
+            ws.onmessage = function(event) {
+
+                var messages = document.getElementById('messages')
+
+                var message = document.createElement('li')
+
+                var content = document.createTextNode(event.data)
+
+                message.appendChild(content)
+
+                messages.appendChild(message)
+
+            };
+
+            function sendMessage(event) {
+
+                var input = document.getElementById("messageText")
+
+                ws.send(input.value)
+
+                input.value = ''
+
+                event.preventDefault()
+
+            }
+
+        </script>
+
+    </body>
+
+</html>
+
+"""
 
 
-@app.get('/fake_txt_process')
-def read_fake_text_process(txt: str):
-    data = {}
-    data['title'] = txt.title()
-    words = txt.split() # split with  whitespace
-    data['word_count'] = len(words)
-    data['sentence_count'] = txt.count('.') 
-    return data
+
+
+@app.get("/")
+
+async def get():
+
+    return HTMLResponse(html)
+
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
